@@ -2,17 +2,37 @@ class Slide {
   constructor(slide, wrapper) {
     this.slide = document.querySelector(slide);
     this.wrapper = document.querySelector(wrapper);
+    this.distances = {
+      finalPosition: 0,
+      startX: 0,
+      movement: 0,
+    };
   }
 
   onStart(event) {
     event.preventDefault();
+    this.distances.startX = event.clientX;
     this.wrapper.addEventListener('mousemove', this.onMove);
   }
 
-  onMove(event) {}
+  updatePosition(clientX) {
+    this.distances.movement = (this.distances.startX - clientX) * 1.6;
+    return this.distances.finalPosition - this.distances.movement;
+  }
+
+  moveSlide(distanceX) {
+    this.distances.movePosition = distanceX;
+    this.slide.style.transform = `translate3d(${distanceX}px, 0, 0)`;
+  }
+
+  onMove({ clientX }) {
+    const finalPosition = this.updatePosition(clientX);
+    this.moveSlide(finalPosition);
+  }
 
   onEnd(event) {
     this.wrapper.removeEventListener('mousemove', this.onMove);
+    this.distances.finalPosition = this.distances.movePosition;
   }
 
   addSlideEvents() {
